@@ -12,6 +12,7 @@ import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -34,8 +35,9 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
 
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
             User user = event.getUser();
-            WrapperPlayClientPlayerDigging playerDigging = new WrapperPlayClientPlayerDigging(event);
             Player player = event.getPlayer();
+            if(player.getGameMode() == GameMode.CREATIVE) return;
+            WrapperPlayClientPlayerDigging playerDigging = new WrapperPlayClientPlayerDigging(event);
             Vector3i blockPosition = playerDigging.getBlockPosition();
             Block block = player.getWorld().getBlockAt(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
             Integer delay = plugin.getBlockManager().get(block.getType());
