@@ -22,7 +22,7 @@ public class PlayerDigging {
 
     public static void sendBreakAnimation(Player player, Vector3i block, byte stage) {
         WrapperPlayServerBlockBreakAnimation animation = new WrapperPlayServerBlockBreakAnimation(
-                player.getEntityId() + 1,
+                block.hashCode(),
                 block,
                 stage);
         PacketEvents.getAPI().getPlayerManager().sendPacket(player,animation);

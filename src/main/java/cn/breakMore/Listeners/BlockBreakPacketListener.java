@@ -55,20 +55,20 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                             cancel();
                             return;
                         }
-                        stage += 1;
                         for (Entity e : player.getWorld().getNearbyEntities(location, 16, 16, 16)) {
                             if (e instanceof Player p) {
                                 PlayerDigging.sendBreakAnimation(p, blockPosition, stage);
                             }
                         }
-                        if (stage >= 9) {
+                        stage += 1;
+                        if (stage > 9) {
                             PlayerDigging.cancelTask(location);
                             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                                 if (EventUtils.callEvent(new BlockBreakEvent(block, player))) {
                                     block.breakNaturally(player.getInventory().getItemInMainHand(), true);
                                 }
                                 PlayerDigging.removeLocation(location);
-                            }, delay);
+                            }, 1);
                         }
                     }
                 }.runTaskTimer(plugin, delay, delay);

@@ -2,3 +2,6 @@ name: BreakMore
 version: '1.0'
 main: cn.breakMore.Main
 api-version: '1.21'
+
+depend:
+  - packetevents
