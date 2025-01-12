@@ -28,17 +28,17 @@ public class PlayerDigging {
         PacketEvents.getAPI().getPlayerManager().sendPacket(player,animation);
     }
 
-    public static void addLocation(Location location, BukkitTask task) {
+    public static void add(Location location, BukkitTask task) {
         instance.locations.put(location, task);
     }
 
-    public static void cancelTask(Location location) {
+    public static void cancel(Location location) {
         if(instance.locations.containsKey(location)) {
             instance.locations.get(location).cancel();
         }
     }
 
-    public static void removeLocation(Location location) {
+    public static void remove(Location location) {
         instance.locations.remove(location);
     }
 

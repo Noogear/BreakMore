@@ -34,7 +34,6 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
     public void onPacketReceive(PacketReceiveEvent event) {
 
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
-            User user = event.getUser();
             Player player = event.getPlayer();
             if (player.getGameMode() == GameMode.CREATIVE) return;
             WrapperPlayClientPlayerDigging playerDigging = new WrapperPlayClientPlayerDigging(event);
@@ -56,12 +55,12 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                             return;
                         }
                         if (stage >= 10) {
-                            PlayerDigging.cancelTask(location);
+                            PlayerDigging.cancel(location);
                             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                                 if (EventUtils.callEvent(new BlockBreakEvent(block, player))) {
                                     block.breakNaturally(player.getInventory().getItemInMainHand(), true);
                                 }
-                                PlayerDigging.removeLocation(location);
+                                PlayerDigging.remove(location);
                             }, 1);
                             return;
                         }
@@ -73,10 +72,10 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                         stage++;
                     }
                 }.runTaskTimer(plugin, 0, delay);
-                PlayerDigging.addLocation(location, task);
+                PlayerDigging.add(location, task);
             } else {
-                PlayerDigging.cancelTask(location);
-                PlayerDigging.removeLocation(location);
+                PlayerDigging.cancel(location);
+                PlayerDigging.remove(location);
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     for (Entity e : player.getWorld().getNearbyEntities(location, 16, 16, 16)) {
                         if (e instanceof Player p) {
