@@ -55,13 +55,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                             cancel();
                             return;
                         }
-                        for (Entity e : player.getWorld().getNearbyEntities(location, 16, 16, 16)) {
-                            if (e instanceof Player p) {
-                                PlayerDigging.sendBreakAnimation(p, blockPosition, stage);
-                            }
-                        }
-                        stage += 1;
-                        if (stage > 9) {
+                        if (stage >= 10) {
                             PlayerDigging.cancelTask(location);
                             Bukkit.getScheduler().runTaskLater(plugin, () -> {
                                 if (EventUtils.callEvent(new BlockBreakEvent(block, player))) {
@@ -69,9 +63,16 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                                 }
                                 PlayerDigging.removeLocation(location);
                             }, 1);
+                            return;
                         }
+                        for (Entity e : player.getWorld().getNearbyEntities(location, 16, 16, 16)) {
+                            if (e instanceof Player p) {
+                                PlayerDigging.sendBreakAnimation(p, blockPosition, stage);
+                            }
+                        }
+                        stage++;
                     }
-                }.runTaskTimer(plugin, delay, delay);
+                }.runTaskTimer(plugin, 0, delay);
                 PlayerDigging.addLocation(location, task);
             } else {
                 PlayerDigging.cancelTask(location);
