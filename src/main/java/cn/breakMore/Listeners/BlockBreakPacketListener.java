@@ -36,7 +36,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
             User user = event.getUser();
             Player player = event.getPlayer();
-            if(player.getGameMode() == GameMode.CREATIVE) return;
+            if (player.getGameMode() == GameMode.CREATIVE) return;
             WrapperPlayClientPlayerDigging playerDigging = new WrapperPlayClientPlayerDigging(event);
             Vector3i blockPosition = playerDigging.getBlockPosition();
             Block block = player.getWorld().getBlockAt(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
@@ -45,6 +45,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
 
             Location location = block.getLocation();
             if (playerDigging.getAction() == DiggingAction.START_DIGGING) {
+                if (PlayerDigging.isBreaking(location)) return;
                 BukkitTask task = new BukkitRunnable() {
                     byte stage = 0;
 
