@@ -1,9 +1,8 @@
-break-time:
+end_portal_frame:
+  break-time:
   - 'diamond_pickaxe:80'
   - 'netherite_pickaxe:60'
-
-drops:
+  drops:
   - 'reinforced_deepslate:1-4'
   - 'end_stone:1-9'
-
-break-frame: true
+  break-frame: true

@@ -1,6 +1,6 @@
-name: BreakableEndFrame
+name: UnUnbreakable
 version: '1.0.1'
-main: cn.BreakableEndFrame.Main
+main: cn.unUnbreakable.Main
 api-version: '1.21'
 
 depend:

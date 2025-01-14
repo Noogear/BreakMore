@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn</groupId>
-    <artifactId>BreakableEndFrame</artifactId>
+    <artifactId>UnUnbreakable</artifactId>
     <version>1.0.1</version>
     <packaging>jar</packaging>
 
-    <name>BreakableEndFrame</name>
+    <name>UnUnbreakable</name>
 
     <properties>
         <java.version>21</java.version>
