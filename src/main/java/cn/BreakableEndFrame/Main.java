@@ -1,16 +1,16 @@
-package cn.breakMore;
+package cn.BreakableEndFrame;
 
-import cn.breakMore.Listeners.BlockBreakPacketListener;
-import cn.breakMore.Managers.BlockManager;
-import cn.breakMore.Managers.PlayerDigging;
-import cn.breakMore.Utils.XLogger;
+import cn.BreakableEndFrame.Listeners.BlockBreakPacketListener;
+import cn.BreakableEndFrame.Managers.ConfigManager;
+import cn.BreakableEndFrame.Managers.PlayerDigging;
+import cn.BreakableEndFrame.Utils.XLogger;
 import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
 
-    private BlockManager blockManager;
+    private ConfigManager configManager;
 
     @Override
     public void onLoad() {
@@ -23,12 +23,11 @@ public final class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         new XLogger(this);
-        XLogger.info("加载中");
         // Plugin startup logic
         PacketEvents.getAPI().init();
         saveDefaultConfig();
         reloadConfig();
-        blockManager = new BlockManager(this);
+        configManager = new ConfigManager(this);
         new PlayerDigging();
     }
 
@@ -43,7 +42,7 @@ public final class Main extends JavaPlugin {
 
     }
 
-    public BlockManager getBlockManager(){
-        return blockManager;
+    public ConfigManager getBlockManager(){
+        return configManager;
     }
 }

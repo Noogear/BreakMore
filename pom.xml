@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cn</groupId>
-    <artifactId>breakmore</artifactId>
+    <artifactId>BreakableEndFrame</artifactId>
     <version>1.0.1</version>
     <packaging>jar</packaging>
 
-    <name>breakmore</name>
+    <name>BreakableEndFrame</name>
 
     <properties>
         <java.version>21</java.version>
