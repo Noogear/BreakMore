@@ -111,11 +111,11 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
 
     private void frameBreak(Block startBlock) {
         List<Block> blockList = new ArrayList<>();
-        Set<Block> visited = new HashSet<>();
+        Set<Location> visited = new HashSet<>();
 
         for (BlockFace face : blockFaces) {
             Block adjacentBlock = startBlock.getRelative(face);
-            visited.add(adjacentBlock);
+            visited.add(adjacentBlock.getLocation());
             if (adjacentBlock.getType() == Material.END_PORTAL) {
                 blockList.add(adjacentBlock);
             }
@@ -127,8 +127,8 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                 currentBlock.breakNaturally(true);
                 for (BlockFace face : blockFaces) {
                     Block adjacentBlock = currentBlock.getRelative(face);
-                    if (!visited.contains(adjacentBlock)) {
-                        visited.add(adjacentBlock);
+                    if (!visited.contains(adjacentBlock.getLocation())) {
+                        visited.add(adjacentBlock.getLocation());
                         if (adjacentBlock.getType() == Material.END_PORTAL) {
                             blockList.add(adjacentBlock);
                         }
