@@ -23,7 +23,7 @@ public class Degree {
             String[] range = value.replace(" ", "").split("-");
             if (range.length >= 2) {
                 start = Integer.parseInt(range[0]);
-                end = Integer.parseInt(range[range.length - 1]);
+                end = Integer.parseInt(range[range.length - 1]) + 1;
             }
         } else {
             fixed = Arrays.stream(value.replace(" ", "").split(",")).mapToInt(Integer::parseInt).toArray();
