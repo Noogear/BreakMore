@@ -40,24 +40,25 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
             Player player = event.getPlayer();
             if (player.getGameMode() == GameMode.CREATIVE) return;
-            WrapperPlayClientPlayerDigging playerDigging = new WrapperPlayClientPlayerDigging(event);
-            Vector3i blockPosition = playerDigging.getBlockPosition();
-            Block block = player.getWorld().getBlockAt(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
-            UnbreakableBlock unbreakableBlock = plugin.getBlockManager().getBlock(block.getType());
-            if (unbreakableBlock == null) return;
-            ItemStack tools = player.getInventory().getItemInMainHand();
-            int delay = unbreakableBlock.getBreakTime(tools.getType());
-            if (delay < 0) return;
+            WrapperPlayClientPlayerDigging playerDiggingPacket = new WrapperPlayClientPlayerDigging(event);
+            Vector3i blockPosition = playerDiggingPacket.getBlockPosition();
+            World world = player.getWorld();
+            Block block = world.getBlockAt(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
             Location location = block.getLocation();
             User user = event.getUser();
             int userID = user.getEntityId();
 
-            if (playerDigging.getAction() == DiggingAction.START_DIGGING) {
+            if (playerDiggingPacket.getAction() == DiggingAction.START_DIGGING) {
                 if (PlayerDigging.isBreaking(location)) return;
-                World world = player.getWorld();
+                UnbreakableBlock unbreakableBlock = plugin.getBlockManager().getBlock(block.getType());
+                if (unbreakableBlock == null) return;
+                ItemStack tools = player.getInventory().getItemInMainHand();
+                int delay = unbreakableBlock.getBreakTime(tools.getType());
+                if (delay < 0) return;
 
                 BukkitTask task = new BukkitRunnable() {
-                    byte stage = 0;
+                    int stage = 0;
+
                     @Override
                     public void run() {
                         if (!PlayerDigging.isBreaking(location)) {
@@ -85,7 +86,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                                     }
                                 } else {
                                     for (Player p : world.getNearbyPlayers(location, 16, 16, 16)) {
-                                        PlayerDigging.sendBreakAnimation(p, userID, blockPosition, (byte) 10);
+                                        p.sendBlockDamage(location, 1, userID);
                                     }
                                 }
                                 PlayerDigging.remove(location);
@@ -93,7 +94,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                             return;
                         }
                         for (Player p : world.getNearbyPlayers(location, 16, 16, 16)) {
-                            PlayerDigging.sendBreakAnimation(p, userID, blockPosition, stage);
+                            p.sendBlockDamage(location, (float) stage / 10, userID);
                         }
                         stage++;
                     }
@@ -104,8 +105,8 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                 PlayerDigging.cancel(location);
                 PlayerDigging.remove(location);
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    for (Player p : player.getWorld().getNearbyPlayers(location, 16, 16, 16)) {
-                        PlayerDigging.sendBreakAnimation(p, userID, blockPosition, (byte) 10);
+                    for (Player p : world.getNearbyPlayers(location, 16, 16, 16)) {
+                        p.sendBlockDamage(location, 1, userID);
                     }
                 });
             }
