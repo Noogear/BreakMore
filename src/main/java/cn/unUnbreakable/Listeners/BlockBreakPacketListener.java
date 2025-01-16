@@ -11,6 +11,7 @@ import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.DiggingAction;
+import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
 import org.bukkit.*;
@@ -47,14 +48,16 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
             ItemStack tools = player.getInventory().getItemInMainHand();
             int delay = unbreakableBlock.getBreakTime(tools.getType());
             if (delay < 0) return;
-
             Location location = block.getLocation();
+            User user = event.getUser();
+            int userID = user.getEntityId();
+
             if (playerDigging.getAction() == DiggingAction.START_DIGGING) {
                 if (PlayerDigging.isBreaking(location)) return;
                 World world = player.getWorld();
+
                 BukkitTask task = new BukkitRunnable() {
                     byte stage = 0;
-
                     @Override
                     public void run() {
                         if (!PlayerDigging.isBreaking(location)) {
@@ -82,7 +85,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                                     }
                                 } else {
                                     for (Player p : world.getNearbyPlayers(location, 16, 16, 16)) {
-                                        PlayerDigging.sendBreakAnimation(p, blockPosition, (byte) 10);
+                                        PlayerDigging.sendBreakAnimation(p, userID, blockPosition, (byte) 10);
                                     }
                                 }
                                 PlayerDigging.remove(location);
@@ -90,18 +93,19 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                             return;
                         }
                         for (Player p : world.getNearbyPlayers(location, 16, 16, 16)) {
-                            PlayerDigging.sendBreakAnimation(p, blockPosition, stage);
+                            PlayerDigging.sendBreakAnimation(p, userID, blockPosition, stage);
                         }
                         stage++;
                     }
                 }.runTaskTimer(plugin, 0, delay);
+
                 PlayerDigging.add(location, task);
             } else {
                 PlayerDigging.cancel(location);
                 PlayerDigging.remove(location);
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     for (Player p : player.getWorld().getNearbyPlayers(location, 16, 16, 16)) {
-                        PlayerDigging.sendBreakAnimation(p, blockPosition, (byte) 10);
+                        PlayerDigging.sendBreakAnimation(p, userID, blockPosition, (byte) 10);
                     }
                 });
             }

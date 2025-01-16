@@ -1,6 +1,7 @@
 package cn.unUnbreakable.Managers;
 
 import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockBreakAnimation;
 import org.bukkit.Location;
@@ -14,9 +15,9 @@ public class PlayerDigging {
 
     private static final Map<Location, BukkitTask> locations = new HashMap<>();
 
-    public static void sendBreakAnimation(Player player, Vector3i block, byte stage) {
+    public static void sendBreakAnimation(Player player, int userID, Vector3i block, byte stage) {
         WrapperPlayServerBlockBreakAnimation animation = new WrapperPlayServerBlockBreakAnimation(
-                block.hashCode(),
+                userID,
                 block,
                 stage);
         PacketEvents.getAPI().getPlayerManager().sendPacket(player, animation);
