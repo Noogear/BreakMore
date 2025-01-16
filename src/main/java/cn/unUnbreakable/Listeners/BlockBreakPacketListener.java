@@ -11,7 +11,6 @@ import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.player.DiggingAction;
-import com.github.retrooper.packetevents.protocol.player.User;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
 import org.bukkit.*;
@@ -39,15 +38,12 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.getPacketType() == PacketType.Play.Client.PLAYER_DIGGING) {
             Player player = event.getPlayer();
-            if (player.getGameMode() == GameMode.CREATIVE) return;
+            if (player.getGameMode() != GameMode.SURVIVAL) return;
             WrapperPlayClientPlayerDigging playerDiggingPacket = new WrapperPlayClientPlayerDigging(event);
             Vector3i blockPosition = playerDiggingPacket.getBlockPosition();
             World world = player.getWorld();
             Block block = world.getBlockAt(blockPosition.getX(), blockPosition.getY(), blockPosition.getZ());
             Location location = block.getLocation();
-            User user = event.getUser();
-            int userID = user.getEntityId();
-
             if (playerDiggingPacket.getAction() == DiggingAction.START_DIGGING) {
                 if (PlayerDigging.isBreaking(location)) return;
                 UnbreakableBlock unbreakableBlock = plugin.getBlockManager().getBlock(block.getType());
@@ -57,7 +53,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                 if (delay < 0) return;
 
                 BukkitTask task = new BukkitRunnable() {
-                    int stage = 0;
+                    byte stage = 0;
 
                     @Override
                     public void run() {
@@ -65,7 +61,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                             cancel();
                             return;
                         }
-                        if (stage >= 10) {
+                        if (stage > 9) {
                             PlayerDigging.cancel(location);
                             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                                 if (EventUtils.callEvent(new BlockBreakEvent(block, player))) {
@@ -74,7 +70,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                                     if (!drops.isEmpty()) {
                                         drops.forEach((k, v) -> {
                                             int amount = v.getRandom();
-                                            if (amount != 0) {
+                                            if (amount > 0) {
                                                 world.dropItemNaturally(location, new ItemStack(k, amount));
                                             }
                                         });
@@ -84,19 +80,18 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                                             frameBreak(block);
                                         }
                                     }
-                                } else {
-                                    for (Player p : world.getNearbyPlayers(location, 16, 16, 16)) {
-                                        p.sendBlockDamage(location, 1, userID);
-                                    }
+                                }
+                                for (Player p : world.getNearbyPlayers(location, 16, 16, 16)) {
+                                    p.sendBlockDamage(location, 0, location.hashCode());
                                 }
                                 PlayerDigging.remove(location);
                             });
                             return;
                         }
-                        for (Player p : world.getNearbyPlayers(location, 16, 16, 16)) {
-                            p.sendBlockDamage(location, (float) stage / 10, userID);
-                        }
                         stage++;
+                        for (Player p : world.getNearbyPlayers(location, 16, 16, 16)) {
+                            p.sendBlockDamage(location, (float) stage / 10, location.hashCode());
+                        }
                     }
                 }.runTaskTimer(plugin, 0, delay);
 
@@ -107,7 +102,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                 PlayerDigging.remove(location);
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     for (Player p : world.getNearbyPlayers(location, 16, 16, 16)) {
-                        p.sendBlockDamage(location, 1, userID);
+                        p.sendBlockDamage(location, 0, location.hashCode());
                     }
                 });
             }
@@ -127,6 +122,8 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                 blockList.add(adjacentBlock);
             }
         }
+
+        if (blockList.isEmpty()) return;
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -144,7 +141,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                 if (blockList.isEmpty()) {
                     cancel();
                     visited.clear();
-                    currentBlock.getWorld().playSound(currentBlock.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 2F, 0.5F);
+                    currentBlock.getWorld().playSound(currentBlock.getLocation(), Sound.BLOCK_BEACON_DEACTIVATE, 3F, 0.5F);
                 }
             }
         }.runTaskTimer(plugin, 1, 1);

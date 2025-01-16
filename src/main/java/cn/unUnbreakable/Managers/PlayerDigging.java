@@ -15,7 +15,7 @@ public class PlayerDigging {
     }
 
     public static void cancel(Location location) {
-            locations.get(location).cancel();
+        locations.get(location).cancel();
     }
 
     public static void remove(Location location) {
