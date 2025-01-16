@@ -102,6 +102,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
 
                 PlayerDigging.add(location, task);
             } else {
+                if (!PlayerDigging.isBreaking(location)) return;
                 PlayerDigging.cancel(location);
                 PlayerDigging.remove(location);
                 Bukkit.getScheduler().runTask(plugin, () -> {
