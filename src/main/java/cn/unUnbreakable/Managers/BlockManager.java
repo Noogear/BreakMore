@@ -21,11 +21,9 @@ public class BlockManager {
     private final Main plugin;
     private final Set<String> subKeys;
     private Map<Material, UnbreakableBlock> blocks;
-    private final FileConfiguration config;
 
     public BlockManager(Main main) {
         this.plugin = main;
-        config = plugin.getConfig();
         this.subKeys = new HashSet<>(Arrays.asList("break-time", "drops", "break-frame"));
         load();
     }
@@ -34,11 +32,11 @@ public class BlockManager {
         blocks = new HashMap<>();
         plugin.saveDefaultConfig();
         plugin.reloadConfig();
+        FileConfiguration config = plugin.getConfig();
         Set<String> topKeys = config.getKeys(false);
         boolean newConfig = false;
 
         for (String key : topKeys) {
-            XLogger.info(key);
             ConfigurationSection section = config.getConfigurationSection(key);
             if (section == null) continue;
             List<String> breakTime = section.getStringList("break-time");
@@ -56,6 +54,7 @@ public class BlockManager {
             } else {
                 blocks.put(material, UnbreakableBlock.build(breakTime, drops));
             }
+            XLogger.info("Loaded block: " + material);
             for (String subKey : section.getKeys(false)) {
                 if (!subKeys.contains(subKey.toLowerCase())) {
                     newConfig = true;

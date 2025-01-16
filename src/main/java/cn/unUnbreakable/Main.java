@@ -6,6 +6,7 @@ import cn.unUnbreakable.Managers.PlayerDigging;
 import cn.unUnbreakable.Utils.XLogger;
 import com.github.retrooper.packetevents.PacketEvents;
 import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin {
@@ -24,6 +25,12 @@ public final class Main extends JavaPlugin {
         new XLogger(this);
         PacketEvents.getAPI().init();
         blockManager = new BlockManager(this);
+        PluginCommand mainCommand = getCommand("ununbreakable");
+        if (mainCommand != null) {
+            mainCommand.setExecutor(new Commands(this));
+        } else {
+            XLogger.err("Failed to load command.");
+        }
     }
 
     @Override
@@ -31,10 +38,6 @@ public final class Main extends JavaPlugin {
         PacketEvents.getAPI().terminate();
     }
 
-
-    public void load(){
-
-    }
 
     public BlockManager getBlockManager(){
         return blockManager;

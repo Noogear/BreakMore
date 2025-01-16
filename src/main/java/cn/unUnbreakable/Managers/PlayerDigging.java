@@ -26,4 +26,11 @@ public class PlayerDigging {
         return locations.containsKey(location);
     }
 
+    public static void clearAll(){
+        locations.forEach((location, task) -> {
+            task.cancel();
+        });
+        locations.clear();
+    }
+
 }

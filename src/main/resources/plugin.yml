@@ -5,3 +5,13 @@ api-version: '1.21'
 
 depend:
   - packetevents
+
+commands:
+  ununbreakable:
+    description: Main command.
+    usage: /<command>
+
+permissions:
+  ununbreakable.reload:
+    description: Allow the player to reload the plugin.
+    default: op
