@@ -72,7 +72,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
                                     block.breakNaturally(tools, true);
                                     Map<Material, Degree> drops = unbreakableBlock.getDrops();
                                     if (!drops.isEmpty()) {
-                                        unbreakableBlock.getDrops().forEach((k, v) -> {
+                                        drops.forEach((k, v) -> {
                                             int amount = v.getRandom();
                                             if (amount != 0) {
                                                 world.dropItemNaturally(location, new ItemStack(k, amount));
