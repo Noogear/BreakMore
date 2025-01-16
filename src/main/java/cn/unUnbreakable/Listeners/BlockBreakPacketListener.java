@@ -112,6 +112,7 @@ public class BlockBreakPacketListener extends PacketListenerAbstract {
     private void frameBreak(Block startBlock) {
         List<Block> blockList = new ArrayList<>();
         Set<Location> visited = new HashSet<>();
+        visited.add(startBlock.getLocation());
 
         for (BlockFace face : blockFaces) {
             Block adjacentBlock = startBlock.getRelative(face);
